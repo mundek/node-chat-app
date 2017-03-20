@@ -1,29 +1,29 @@
 const path = require('path');
+const http = require('http');
 const express = require('express');
+const socketIO = require('socket.io');
 
 const publicPath = path.join(__dirname, '../public/');
-// console.log(`publicPath: ${publicPath}`);
 const port = process.env.PORT || 3000;
 var app = express();
+var server = http.createServer(app);
+var io = socketIO(server);
 
 app.use(express.static(publicPath));
 
-// app.get('/', (req, res) => {
-//   res.sendFile(publicPath + '/index.html');
-//   console.log('app.get called');
-// });
+io.on('connection', (socket) => {
+  console.log('New user connected');
 
-app.listen(port, () => {
-  console.log(`Started on port ${port}`);
+  socket.on('connect', () => {
+      console.log('Connected to client');
+  });
+
+  socket.on('disconnect', () => {
+      console.log('Disconnected from client');
+  });
+  
 });
 
-module.exports = {app};
-
-
-// CHALLENGE
-// Create a brand new express app
-// Configure to serve up the public folder
-// Call app.listen on port 3000
-// Provide callback function to terminal to confirm server is up
-
-// localhost:3000 should serve up index.html
+server.listen(port, () => {
+  console.log(`Started on port ${port}`);
+});
